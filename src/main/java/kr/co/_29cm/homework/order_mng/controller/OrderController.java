@@ -1,20 +1,17 @@
 package kr.co._29cm.homework.order_mng.controller;
 
-import jakarta.servlet.http.HttpSession;
 import kr.co._29cm.homework.order_mng.dto.ItemResponse;
 import kr.co._29cm.homework.order_mng.dto.OrderRequest;
+import kr.co._29cm.homework.order_mng.dto.OrderResponse;
 import kr.co._29cm.homework.order_mng.entity.Item;
-import kr.co._29cm.homework.order_mng.entity.Order;
+import kr.co._29cm.homework.order_mng.exception.NullItemException;
+import kr.co._29cm.homework.order_mng.repository.ItemRepository;
 import kr.co._29cm.homework.order_mng.service.OrderService;
 import kr.co._29cm.homework.order_mng.utils.ApiUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static kr.co._29cm.homework.order_mng.utils.ApiUtils.success;
@@ -27,6 +24,8 @@ public class OrderController {
 
     private final OrderService orderService;
 
+    private final ItemRepository itemRepository;
+
     @GetMapping("/item")
     public List<ItemResponse> itemList() {
         return orderService.items();
@@ -34,10 +33,17 @@ public class OrderController {
 
     @PostMapping("/item")
     public ApiUtils.ApiResult order(OrderRequest orderRequest) {
-        orderService.checkOrder(orderRequest);
+        orderService.orderProcess(orderRequest);
 
-        Order order =orderService.saveOrder(orderRequest);
+        OrderResponse orderResponse = orderService.orderList();
+        return success(orderResponse);
+    }
 
-        return success(order);
+    /**
+     * 테스트용 캐시를 통해 정상적으로 재고를 확인하는지 체크하기 위해 생성
+     */
+    @GetMapping("/item/{itemId}")
+    public Item item(@PathVariable Long itemId) {
+        return itemRepository.findById(itemId).orElseThrow(NullItemException::new);
     }
 }

@@ -5,6 +5,8 @@ import kr.co._29cm.homework.order_mng.dto.OrderRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.repository.Modifying;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -27,6 +29,10 @@ public class Order {
     @Column(name = "order_create_date")
     @CreatedDate
     private LocalDateTime orderCreatedDate;
+
+    @Column(name = "order_modified_date")
+    @LastModifiedDate
+    private LocalDateTime modifiedDate;
 
     public Order(Long itemId, Long itemCount) {
         this.itemId = itemId;
