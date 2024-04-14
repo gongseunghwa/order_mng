@@ -1,8 +1,6 @@
 package kr.co._29cm.homework.order_mng.service.impl;
 
-import kr.co._29cm.homework.order_mng.dto.ItemResponse;
-import kr.co._29cm.homework.order_mng.dto.OrderRequest;
-import kr.co._29cm.homework.order_mng.dto.OrderResponse;
+import kr.co._29cm.homework.order_mng.dto.*;
 import kr.co._29cm.homework.order_mng.entity.Item;
 import kr.co._29cm.homework.order_mng.entity.Order;
 import kr.co._29cm.homework.order_mng.exception.ItemExistException;
@@ -14,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -39,7 +38,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderResponse> orderList() {
-        return orderRepository.findAllOrder();
+    public OrderResponse orderList() {
+        List<OrderDetail> orderDetail = orderRepository.findAllOrder();
+        Long sumPrice = orderDetail.stream().mapToLong(item -> item.itemPrice() * item.itemCount()).sum();
+        List<Fee> feeList = new ArrayList<>();
+        feeList.add(new ItemPrice(sumPrice));
+        if(sumPrice < 50000l) {
+            feeList.add(new DeliveryFee());
+        }
+
+        return new OrderResponse(orderDetail, feeList, sumPrice);
     }
 }

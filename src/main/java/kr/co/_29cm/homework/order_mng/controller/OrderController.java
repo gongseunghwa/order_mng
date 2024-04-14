@@ -1,18 +1,14 @@
 package kr.co._29cm.homework.order_mng.controller;
 
 import jakarta.validation.Valid;
-import kr.co._29cm.homework.order_mng.dto.ItemResponse;
-import kr.co._29cm.homework.order_mng.dto.OrderRequest;
-import kr.co._29cm.homework.order_mng.dto.OrderResponse;
-import kr.co._29cm.homework.order_mng.entity.Item;
-import kr.co._29cm.homework.order_mng.exception.ItemExistException;
-import kr.co._29cm.homework.order_mng.repository.ItemRepository;
+import kr.co._29cm.homework.order_mng.dto.*;
 import kr.co._29cm.homework.order_mng.service.OrderService;
 import kr.co._29cm.homework.order_mng.utils.ApiUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static kr.co._29cm.homework.order_mng.utils.ApiUtils.success;
@@ -34,8 +30,8 @@ public class OrderController {
     @PostMapping("/item")
     public ApiUtils.ApiResult order(@RequestBody @Valid OrderRequest orderRequest) {
         orderService.orderProcess(orderRequest);
-
         return success(orderService.orderList());
+
     }
 
 }
