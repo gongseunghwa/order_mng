@@ -32,7 +32,7 @@ public class OrderController {
     }
 
     @PostMapping("/item")
-    public ApiUtils.ApiResult order(OrderRequest orderRequest) {
+    public ApiUtils.ApiResult order(@RequestBody OrderRequest orderRequest) {
         orderService.orderProcess(orderRequest);
 
         OrderResponse orderResponse = orderService.orderList();

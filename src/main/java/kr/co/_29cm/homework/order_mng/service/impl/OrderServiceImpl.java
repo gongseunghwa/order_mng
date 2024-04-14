@@ -11,9 +11,6 @@ import kr.co._29cm.homework.order_mng.repository.ItemRepository;
 import kr.co._29cm.homework.order_mng.repository.OrderRepository;
 import kr.co._29cm.homework.order_mng.service.OrderService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +28,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public void orderProcess(OrderRequest orderRequest) {
+    public synchronized void orderProcess(OrderRequest orderRequest) {
         Item item = itemRepository.findById(orderRequest.itemId()).orElseThrow(NullItemException::new);
         if(orderRequest.itemCount() > item.getInventory()) {
             throw new SoldOutException();

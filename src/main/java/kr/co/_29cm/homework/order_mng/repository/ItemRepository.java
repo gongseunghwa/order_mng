@@ -14,7 +14,7 @@ import java.util.Optional;
 @CacheConfig(cacheNames = "item")
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    @Cacheable(value = "'all'")
+    @Cacheable(value = "'all'", sync = true)
     @Query("select new kr.co._29cm.homework.order_mng.dto.ItemResponse(i.id, i.name, i.price, i.inventory) from Item i")
     List<ItemResponse> findAllItem();
 
