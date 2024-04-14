@@ -2,10 +2,9 @@ package kr.co._29cm.homework.order_mng.controller;
 
 import jakarta.servlet.http.HttpSession;
 import kr.co._29cm.homework.order_mng.dto.ItemResponse;
-import kr.co._29cm.homework.order_mng.dto.OrderResponse;
+import kr.co._29cm.homework.order_mng.dto.OrderRequest;
 import kr.co._29cm.homework.order_mng.entity.Item;
 import kr.co._29cm.homework.order_mng.entity.Order;
-import kr.co._29cm.homework.order_mng.exception.NullItemException;
 import kr.co._29cm.homework.order_mng.service.OrderService;
 import kr.co._29cm.homework.order_mng.utils.ApiUtils;
 import lombok.RequiredArgsConstructor;
@@ -34,15 +33,11 @@ public class OrderController {
     }
 
     @PostMapping("/item")
-    public ApiUtils.ApiResult order(OrderResponse orderResponse, HttpSession session) {
-        orderService.checkOrder(orderResponse);
-        List<Order> orders = new ArrayList<>();
-        try {
-            orders.addAll((List<Order>) session.getAttribute("orders"));
-        } catch (NullPointerException e) {
-         log.info("기존 주문이 없어 추가되지 않음");
-        }
-        orders.add(Order.of(orderResponse));
-        return success(orders);
+    public ApiUtils.ApiResult order(OrderRequest orderRequest) {
+        orderService.checkOrder(orderRequest);
+
+        Order order =orderService.saveOrder(orderRequest);
+
+        return success(order);
     }
 }

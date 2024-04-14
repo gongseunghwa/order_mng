@@ -30,4 +30,8 @@ public class Item {
     private Long inventory;
 
 
+    public void reduceInventory(Long value) {
+        this.inventory -= value;
+    }
+
 }
