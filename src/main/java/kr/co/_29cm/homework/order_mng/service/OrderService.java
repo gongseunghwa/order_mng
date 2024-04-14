@@ -12,5 +12,5 @@ public interface OrderService {
 
     void orderProcess(OrderRequest orderRequest);
 
-    OrderResponse orderList();
+    List<OrderResponse> orderList();
 }

@@ -5,7 +5,7 @@ import kr.co._29cm.homework.order_mng.dto.OrderRequest;
 import kr.co._29cm.homework.order_mng.dto.OrderResponse;
 import kr.co._29cm.homework.order_mng.entity.Item;
 import kr.co._29cm.homework.order_mng.entity.Order;
-import kr.co._29cm.homework.order_mng.exception.NullItemException;
+import kr.co._29cm.homework.order_mng.exception.ItemExistException;
 import kr.co._29cm.homework.order_mng.exception.SoldOutException;
 import kr.co._29cm.homework.order_mng.repository.ItemRepository;
 import kr.co._29cm.homework.order_mng.repository.OrderRepository;
@@ -29,8 +29,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public synchronized void orderProcess(OrderRequest orderRequest) {
-        Item item = itemRepository.findById(orderRequest.itemId()).orElseThrow(NullItemException::new);
-        if(orderRequest.itemCount() > item.getInventory()) {
+        Item item = itemRepository.findById(orderRequest.itemId()).orElseThrow(ItemExistException::new);
+        if(orderRequest.itemCount() > item.getItemInventory()) {
             throw new SoldOutException();
         }
         item.reduceInventory(orderRequest.itemCount());
@@ -39,7 +39,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponse orderList() {
-        return null;
+    public List<OrderResponse> orderList() {
+        return orderRepository.findAllOrder();
     }
 }

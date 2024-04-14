@@ -1,5 +1,6 @@
 package kr.co._29cm.homework.order_mng.utils;
 
+import lombok.Getter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.http.HttpStatus;
@@ -19,8 +20,8 @@ public class ApiUtils {
     }
 
     public static class ApiError {
-        private final String message;
-        private final int status;
+        private String message;
+        private int status;
 
         ApiError(Throwable throwable, HttpStatus status) {
             this(throwable.getMessage(), status);
@@ -29,6 +30,10 @@ public class ApiUtils {
         ApiError(String message, HttpStatus status) {
             this.message = message;
             this.status = status.value();
+        }
+
+        ApiError() {
+
         }
 
         public String getMessage() {
@@ -58,5 +63,10 @@ public class ApiUtils {
                         .append("error", error)
                         .toString();
             }
+
+            public boolean isSuccess() {
+                return this.success;
+            }
         }
+
 }

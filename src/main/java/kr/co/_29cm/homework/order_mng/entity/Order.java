@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.repository.Modifying;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -24,7 +23,7 @@ public class Order {
     private Long itemId;
 
     @Column(name = "item_count")
-    private Long count;
+    private Long itemCount;
 
     @Column(name = "order_create_date")
     @CreatedDate
@@ -36,7 +35,7 @@ public class Order {
 
     public Order(Long itemId, Long itemCount) {
         this.itemId = itemId;
-        this.count = itemCount;
+        this.itemCount = itemCount;
     }
 
     public static Order of(OrderRequest orderRequest) {

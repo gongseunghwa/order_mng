@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
     @Cacheable(value = "'all'", sync = true)
-    @Query("select new kr.co._29cm.homework.order_mng.dto.ItemResponse(i.id, i.name, i.price, i.inventory) from Item i")
+    @Query("select new kr.co._29cm.homework.order_mng.dto.ItemResponse(i.itemId, i.itemName, i.itemPrice, i.itemInventory) from Item i")
     List<ItemResponse> findAllItem();
 
     @Cacheable(value = "#id", unless = "#result == null")
@@ -23,7 +23,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     @Caching(
         evict = @CacheEvict(value = "'all'", allEntries = true),
-        put = @CachePut(key = "#i.id")
+        put = @CachePut(key = "#i.itemId")
     )
     Item save(Item i);
 

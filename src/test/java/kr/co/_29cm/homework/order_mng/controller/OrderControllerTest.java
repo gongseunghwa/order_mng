@@ -1,7 +1,10 @@
 package kr.co._29cm.homework.order_mng.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.constraints.AssertTrue;
 import kr.co._29cm.homework.order_mng.dto.OrderRequest;
+import kr.co._29cm.homework.order_mng.utils.ApiUtils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +15,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -29,8 +35,9 @@ class OrderControllerTest {
 
     @Test
     @DisplayName("멀티스레드 활용 재고관리 테스트")
-    public void 여러주문이_동시에_들어올_때_재고관리가_정상적으로되는지_테스트() throws InterruptedException {
+    public void 요청10개를날려서_재고관리_테스트() throws InterruptedException {
 
+        ConcurrentLinkedQueue queue = new ConcurrentLinkedQueue();
         int numRequests = 10;
         ExecutorService executorService = Executors.newFixedThreadPool(numRequests);
         CountDownLatch latch = new CountDownLatch(numRequests);
@@ -42,7 +49,7 @@ class OrderControllerTest {
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .content(objectMapper.writeValueAsString(new OrderRequest(377169l, 60l))))
                             .andExpect(MockMvcResultMatchers.status().isOk())
-                            .andDo(handler -> System.out.println(handler.getResponse().getContentAsString()))
+                            .andDo(handler -> queue.add(objectMapper.readValue(handler.getResponse().getContentAsString(StandardCharsets.UTF_8), ApiUtils.ApiResult.class)))
                             .andReturn();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -52,7 +59,10 @@ class OrderControllerTest {
             });
         }
 
-        latch.await(); // 모든 요청이 완료될 때까지 대기
+        latch.await();
         executorService.shutdown();
+
+        queue.forEach(System.out::println);
+
     }
 }

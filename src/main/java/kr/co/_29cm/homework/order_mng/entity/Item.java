@@ -18,20 +18,20 @@ import lombok.NoArgsConstructor;
 public class Item {
     @Id
     @Column(name = "item_id")
-    private Long id;
+    private Long itemId;
 
     @Column(name = "item_nm")
-    private String name;
+    private String itemName;
 
     @Column(name = "item_price")
-    private Long price;
+    private Long itemPrice;
 
     @Column(name = "item_inventory")
-    private Long inventory;
+    private Long itemInventory;
 
 
     public void reduceInventory(Long value) {
-        this.inventory -= value;
+        this.itemInventory -= value;
     }
 
 }
