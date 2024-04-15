@@ -18,7 +18,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
-import java.util.List;
+import java.util.*;
 
 
 @Slf4j
@@ -36,6 +36,8 @@ public class Main {
     private static final RestTemplate restTemplate = new RestTemplate();
     private static final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     private static final ObjectMapper mapper = new ObjectMapper();
+    private static final List<OrderRequest> orderRequests = new ArrayList<>();
+
     public static void main(String[] args) {
         while (true) {
             System.out.print(ANNOUNCEMENT_COMMENT);
@@ -49,28 +51,45 @@ public class Main {
 
                 if(isOrderCode(input)) {
                     printMenu();
-                    OrderProcess();
+                    while (true) {
+                        if(orderProcess()) {
+                            break;
+                        }
+                    }
+                    doPayment();
                 }
             } catch (Exception e) {
                 log.error(e.getMessage());
             }
+            orderRequests.clear();
         }
     }
-
-    private static void OrderProcess() throws IOException {
+    private static boolean orderProcess() throws IOException{
         System.out.print("상품번호 : ");
-        Long itemId = Long.valueOf(br.readLine());
-        System.out.println("수량 : ");
-        Long itemCount = Long.valueOf(br.readLine());
+        String itemId = br.readLine();
+        System.out.print("수량 : ");
+        String itemCount = br.readLine();
 
-        ResponseEntity<ApiUtils.ApiResult> result = doOrder(itemId, itemCount);
+        if(itemId.equals(" ") && itemCount.equals(" ")) {
+            return true;
+        }
+        try {
+            orderRequests.add(new OrderRequest(Long.valueOf(itemId), Long.valueOf(itemCount)));
+        }catch (Exception e) {
+            return false;
+        }
+        return false;
+    }
+
+    private static void doPayment() throws IOException {
+
+        ResponseEntity<ApiUtils.ApiResult> result = doOrder();
         if(result.getBody().isSuccess()) {
             OrderResponse orderResponse = mapper.convertValue(result.getBody().response(), OrderResponse.class);
             prettyPrintOrderResponse(orderResponse);
         } else {
             System.out.println(result.getBody().error().getMessage());
         }
-
     }
 
     private static void prettyPrintOrderResponse(OrderResponse orderResponse) {
@@ -85,11 +104,10 @@ public class Main {
         System.out.println(sb);
     }
 
-    private static ResponseEntity<ApiUtils.ApiResult> doOrder(Long itemId, Long itemCount) throws JsonProcessingException {
-        OrderRequest request = new OrderRequest(itemId, itemCount);
+    private static ResponseEntity<ApiUtils.ApiResult> doOrder() throws JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> requestEntity = new HttpEntity<>(mapper.writeValueAsString(request), headers);
+        HttpEntity<String> requestEntity = new HttpEntity<>(mapper.writeValueAsString(orderRequests), headers);
 
         return restTemplate.postForEntity(BASE_URL, requestEntity , ApiUtils.ApiResult.class);
 

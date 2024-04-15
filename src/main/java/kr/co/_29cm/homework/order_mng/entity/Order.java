@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import kr.co._29cm.homework.order_mng.dto.OrderRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -27,10 +28,12 @@ public class Order {
 
     @Column(name = "order_create_date")
     @CreatedDate
+    @Setter
     private LocalDateTime orderCreatedDate;
 
     @Column(name = "order_modified_date")
     @LastModifiedDate
+    @Setter
     private LocalDateTime modifiedDate;
 
     public Order(Long itemId, Long itemCount) {

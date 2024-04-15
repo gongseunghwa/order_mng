@@ -12,3 +12,7 @@ CREATE TABLE tb_lm_item_order (
                             order_create_date TIMESTAMP,
                             order_modified_date TIMESTAMP
 );
+
+CREATE TABLE tb_lm_item_inventory (
+
+)

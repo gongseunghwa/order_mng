@@ -1,6 +1,7 @@
 package kr.co._29cm.homework.order_mng.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import kr.co._29cm.homework.order_mng.dto.*;
 import kr.co._29cm.homework.order_mng.service.OrderService;
 import kr.co._29cm.homework.order_mng.utils.ApiUtils;
@@ -23,15 +24,13 @@ public class OrderController {
 
 
     @GetMapping("/item")
-    public List<ItemResponse> itemList() {
+    public List<ItemResponse> items() {
         return orderService.items();
     }
 
     @PostMapping("/item")
-    public ApiUtils.ApiResult order(@RequestBody @Valid OrderRequest orderRequest) {
-        orderService.orderProcess(orderRequest);
-        return success(orderService.orderList());
-
+    public ApiUtils.ApiResult order(@RequestBody @Valid List<OrderRequest> orderRequest) {
+        return success(orderService.orderProcess(orderRequest));
     }
 
 }

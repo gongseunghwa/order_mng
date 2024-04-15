@@ -10,8 +10,6 @@ import java.util.List;
 public interface OrderService {
     List<ItemResponse> items();
 
+    OrderResponse orderProcess(List<OrderRequest> orderRequest);
 
-    void orderProcess(OrderRequest orderRequest);
-
-    OrderResponse orderList();
 }

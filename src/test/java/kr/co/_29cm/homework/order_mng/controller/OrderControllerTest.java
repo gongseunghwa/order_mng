@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -47,7 +48,7 @@ class OrderControllerTest {
                 try {
                     mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/item")
                                     .contentType(MediaType.APPLICATION_JSON)
-                                    .content(objectMapper.writeValueAsString(new OrderRequest(377169l, 60l))))
+                                    .content(objectMapper.writeValueAsString(List.of(new OrderRequest(377169l, 60l)))))
                             .andExpect(MockMvcResultMatchers.status().isOk())
                             .andDo(handler -> queue.add(objectMapper.readValue(handler.getResponse().getContentAsString(StandardCharsets.UTF_8), ApiUtils.ApiResult.class)))
                             .andReturn();
@@ -58,11 +59,8 @@ class OrderControllerTest {
                 }
             });
         }
-
         latch.await();
         executorService.shutdown();
-
         queue.forEach(System.out::println);
-
     }
 }
