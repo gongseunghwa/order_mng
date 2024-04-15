@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 class OrderControllerTest {
 
     @Autowired
@@ -38,7 +40,7 @@ class OrderControllerTest {
     @DisplayName("멀티스레드 활용 재고관리 테스트")
     public void 요청10개를날려서_재고관리_테스트() throws InterruptedException {
 
-        ConcurrentLinkedQueue queue = new ConcurrentLinkedQueue();
+        ConcurrentLinkedQueue<ApiUtils.ApiResult> queue = new ConcurrentLinkedQueue();
         int numRequests = 10;
         ExecutorService executorService = Executors.newFixedThreadPool(numRequests);
         CountDownLatch latch = new CountDownLatch(numRequests);
@@ -62,5 +64,7 @@ class OrderControllerTest {
         latch.await();
         executorService.shutdown();
         queue.forEach(System.out::println);
+        Assertions.assertTrue(queue.stream().filter(ApiUtils.ApiResult::isSuccess).collect(Collectors.toList()).stream().count() == 1);
+        Assertions.assertTrue(queue.stream().filter(item -> !item.isSuccess()).collect(Collectors.toList()).stream().count() == 9);
     }
 }

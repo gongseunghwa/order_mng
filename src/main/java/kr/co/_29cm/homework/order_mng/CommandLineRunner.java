@@ -8,37 +8,43 @@ import kr.co._29cm.homework.order_mng.dto.OrderRequest;
 import kr.co._29cm.homework.order_mng.dto.OrderResponse;
 import kr.co._29cm.homework.order_mng.utils.ApiUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
-public class Main {
+@Component
+@Profile("!test")
+public class CommandLineRunner implements org.springframework.boot.CommandLineRunner {
+
+
     private static final String ANNOUNCEMENT_COMMENT = "입력(o[order]: 주문, q[quit]: 종료) :";
     private static final String EXIT_COMMENT = "고객님의 주문 감사합니다.";
     private static final String TABLE_LABEL = "상품번호\t상품명\t\t\t\t\t\t\t판매가격\t\t재고수";
     private static final String RESULT_COMMENT =
-                """
-                주문 내역 : 
-                =================================================
-                """;
+            """
+            주문 내역 :
+            =================================================
+            """;
     private static final DecimalFormat formatter = new DecimalFormat("###,###");
     private static final String BASE_URL = "http://localhost:8080/api/v1/item";
     private static final RestTemplate restTemplate = new RestTemplate();
     private static final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     private static final ObjectMapper mapper = new ObjectMapper();
     private static final List<OrderRequest> orderRequests = new ArrayList<>();
-
-    public static void main(String[] args) {
+    @Override
+    public void run(String... args) throws Exception {
         while (true) {
             System.out.print(ANNOUNCEMENT_COMMENT);
             String input;
@@ -64,7 +70,8 @@ public class Main {
             orderRequests.clear();
         }
     }
-    private static boolean orderProcess() throws IOException{
+
+    private static boolean orderProcess() throws IOException {
         System.out.print("상품번호 : ");
         String itemId = br.readLine();
         System.out.print("수량 : ");
